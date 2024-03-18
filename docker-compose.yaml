@@ -4,20 +4,24 @@ services:
   web:
     build: .
     volumes:
-      - .:/app
-      - ./static/:/app/static/
+      - ./app/templates/:/app/templates/
+      - ./app/static/:/app/static/
     ports:
       - "1234:1234"
     depends_on:
       - mongodb
+    env_file: .env
+    networks:
+      - app-network
 
   mongodb:
     image: mongo:latest
     env_file: 
-      - ./2022-03-18-fastapi-beanie-one-page/.env
+      - .env
     ports:
       - "27017:27017"
     volumes:
+      - ./mongo_data:/data/db
       - ./db_confs/mongod.conf:/etc/mongo/mongod.conf
     environment:
       - "MONGO_INITDB_DATABASE=${MONGO_DB}"
