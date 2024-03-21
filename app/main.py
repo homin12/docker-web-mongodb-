@@ -90,7 +90,9 @@ templates = Jinja2Templates(directory="./templates")
 async def app_init():
     user = os.environ.get('MONGO_INITDB_ROOT_USERNAME', '')
     password = os.environ.get('MONGO_INITDB_ROOT_PASSWORD', '')
-    client = motor.motor_asyncio.AsyncIOMotorClient(f'mongodb://myuser:mypass@mongodb:27017')
+    db_host = os.environ.get('MONGO_HOST', '')
+    client = motor.motor_asyncio.AsyncIOMotorClient(f'mongodb://{user}:{password}@{db_host}')
+    # client = motor.motor_asyncio.AsyncIOMotorClient(f'mongodb://myuser:mypass@mongodb:27017')
   #  client = motor.motor_asyncio.AsyncIOMotorClient(f'mongodb://localhost:27017')
     database_names = await client.list_database_names()
     
