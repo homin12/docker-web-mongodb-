@@ -1,5 +1,5 @@
 from typing import Optional
-
+import os
 import motor
 from beanie import Document, Link, init_beanie
 from fastapi import FastAPI, Request
@@ -83,12 +83,17 @@ async def create_data():
 # Step 3: Setup FastAPI and MongoDB database
 # --------------------------------------------------------------------------
 app = FastAPI()
-app.mount("/static", StaticFiles(directory="/home/vvche/lab2/2022-03-18-fastapi-beanie-one-page/static"), name="static")
-templates = Jinja2Templates(directory="templates")
+app.mount("/static", StaticFiles(directory="./static"), name="static")
+templates = Jinja2Templates(directory="./templates")
 
 @app.on_event("startup")
 async def app_init():
-    client = motor.motor_asyncio.AsyncIOMotorClient("mongodb://localhost:27017")
+    user = os.environ.get('MONGO_INITDB_ROOT_USERNAME', '')
+    password = os.environ.get('MONGO_INITDB_ROOT_PASSWORD', '')
+    db_host = os.environ.get('MONGO_HOST', '')
+    client = motor.motor_asyncio.AsyncIOMotorClient(f'mongodb://{user}:{password}@{db_host}')
+    # client = motor.motor_asyncio.AsyncIOMotorClient(f'mongodb://myuser:mypass@mongodb:27017')
+  #  client = motor.motor_asyncio.AsyncIOMotorClient(f'mongodb://localhost:27017')
     database_names = await client.list_database_names()
     
     if "dogs" not in database_names:
